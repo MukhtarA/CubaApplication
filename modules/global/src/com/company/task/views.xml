@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
+
+    <view entity="task_Account" name="account-view" extends="_local">
+        <property name="contacts" view="_minimal"/>
+        <property name="photo" view="_base"/>
+    </view>
+
+    <view class="com.company.task.entity.Account" extends="_local" name="account-contacts">
+        <property name="contacts" view="_minimal" />
+    </view>
+
+    <view entity="task_Contact" extends="_local" name="contacts-account">
+        <property name="account" view="_local" />
+    </view>
+
+    <view entity="task_Order" name="order-view" extends="_local">
+        <property name="product" view="_local" />
+        <property name="account" view="_local" />
+    </view>
+    <view class="com.company.task.entity.Order" extends="_local" name="order-products">
+        <property name="product" view="_local"/>
+    </view>
+
+    <view entity="task_Product" extends="_local" name="products-order">
+        <property name="order" view="_local" />
+    </view>
+</views>

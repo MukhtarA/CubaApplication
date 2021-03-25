@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://accountEdit.caption"
+        focusComponent="form"
+        messagesPack="com.company.task.web.screens.account">
+    <data>
+        <instance id="accountDc"
+                  class="com.company.task.entity.Account">
+            <view extends="_local">
+                <property name="photo" view="_minimal"/>
+                <property name="contacts" view="_minimal">
+                    <property name="contactType"/>
+                    <property name="value"/>
+                </property>
+            </view>
+            <loader/>
+            <collection id="contactsDc" property="contacts"/>
+        </instance>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="editActions" spacing="true">
+        <hbox spacing="true">
+            <groupBox caption="Image">
+                <image id="image" scaleMode="CONTAIN" />
+            </groupBox>
+            <form id="form" dataContainer="accountDc">
+                <column>
+                    <textField id="nameField" property="name"/>
+                    <textField id="lastNameField" property="lastName"/>
+                    <textField id="middleNameField" property="middleName"/>
+                    <upload id="photoField" fileStoragePutMode="IMMEDIATE" property="photo" showFileName="true"/>
+                </column>
+            </form>
+
+            <groupBox
+                    id="contactsBox"
+                    expand="contactsTable">
+                <table id="contactsTable" dataContainer="contactsDc">
+                    <actions>
+                        <action id="create" type="create" openType="DIALOG"/>
+                        <action id="edit" type="edit" openType="DIALOG"/>
+                        <action id="remove" type="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="contactType" />
+                        <column id="value" />
+                    </columns>
+                    <buttonsPanel>
+                        <button action="contactsTable.create"/>
+                        <button action="contactsTable.edit"/>
+                        <button action="contactsTable.remove"/>
+                    </buttonsPanel>
+                </table>
+            </groupBox>
+        </hbox>
+        <hbox id="editActions" spacing="true">
+            <button id="commitAndCloseBtn" action="windowCommitAndClose"/>
+            <button id="closeBtn" action="windowClose"/>
+        </hbox>
+    </layout>
+</window>

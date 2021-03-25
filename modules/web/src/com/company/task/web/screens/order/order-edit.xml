@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://orderEdit.caption"
+        focusComponent="form"
+        messagesPack="com.company.task.web.screens.order">
+    <data>
+        <instance id="orderDc"
+                  class="com.company.task.entity.Order">
+            <view extends="_local">
+                <property name="account" view="_minimal"/>
+                <property name="product" view="_minimal">
+                    <property name="name" />
+                    <property name="price" />
+                    <property name="quantity" />
+                </property>
+            </view>
+            <loader/>
+            <collection id="productsDc" property="product" />
+        </instance>
+    </data>
+    <dialogMode height="600"
+                width="800"/>
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="orderDc">
+            <column width="350px">
+                <dateField id="dateField" property="date"/>
+                <textField id="amountField" property="amount"/>
+                <pickerField id="accountField" property="account">
+                    <actions>
+                        <action id="lookup" type="picker_lookup"/>
+                        <action id="clear" type="picker_clear"/>
+                    </actions>
+                </pickerField>
+            </column>
+        </form>
+
+        <groupBox
+                id="productBox"
+                expand="productsTable"
+                caption="msg://com.company.task.entity.product/Product">
+            <table id="productsTable" dataContainer="productsDc" width="100%">
+                <actions>
+                    <action id="create" type="create" openType="DIALOG"/>
+                    <action id="edit" type="edit" openType="DIALOG"/>
+                    <action id="remove" type="remove"/>
+                </actions>
+                <columns>
+                    <column id="name" />
+                    <column id="price" />
+                    <column id="quantity" />
+                </columns>
+                <buttonsPanel>
+                    <button action="productsTable.create"/>
+                    <button action="productsTable.edit"/>
+                    <button action="productsTable.remove"/>
+                </buttonsPanel>
+            </table>
+        </groupBox>
+
+        <hbox id="editActions" spacing="true">
+            <button id="commitAndCloseBtn" action="windowCommitAndClose"/>
+            <button id="closeBtn" action="windowClose"/>
+        </hbox>
+    </layout>
+</window>
