@@ -4,14 +4,10 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
-import com.haulmont.cuba.gui.model.CollectionPropertyContainer;
-import com.haulmont.cuba.gui.model.DataContext;
+
 import com.haulmont.cuba.gui.model.InstanceContainer;
 import com.haulmont.cuba.gui.screen.*;
 import com.company.task.entity.Account;
-import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import org.checkerframework.checker.units.qual.A;
 
 import javax.inject.Inject;
 
@@ -28,9 +24,6 @@ public class AccountEdit extends StandardEditor<Account> {
     protected Form form;
 
     @Inject
-    protected Image image;
-
-    @Inject
     protected ScreenBuilders screenBuilders;
 
     @Inject
@@ -38,8 +31,15 @@ public class AccountEdit extends StandardEditor<Account> {
 
     @Subscribe
     protected void onInit(InitEvent event){
-        renderImage(accountDc.getItem());
+//        renderImage(accountDc.getItem());
     }
+
+    @Subscribe
+    public void onAfterShow(AfterShowEvent event) {
+        renderImage(getEditedEntity());
+    }
+
+
 
 
     public Component renderImage(Account account){
@@ -49,6 +49,8 @@ public class AccountEdit extends StandardEditor<Account> {
         }
         Image image = uiComponents.create(Image.class);
         image.setScaleMode(Image.ScaleMode.CONTAIN);
+        image.setWidth("80");
+        image.setHeight("80");
         image.setSource(FileDescriptorResource.class)
                 .setFileDescriptor(fileImage);
 

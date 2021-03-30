@@ -21,8 +21,8 @@
                 width="800"/>
     <layout expand="editActions" spacing="true">
         <hbox spacing="true">
-            <groupBox caption="Image">
-                <image id="image" scaleMode="CONTAIN" />
+            <groupBox id="imageBox" caption="Image">
+                <image height="250" width="250" dataContainer="accountDc" property="photo" scaleMode="CONTAIN" />
             </groupBox>
             <form id="form" dataContainer="accountDc">
                 <column>

@@ -2,10 +2,13 @@ package com.company.task.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+
+@Listeners("task_ContactChangedListener")
 @Table(name = "TASK_CONTACT")
 @Entity(name = "task_Contact")
 @NamePattern("%s|account")

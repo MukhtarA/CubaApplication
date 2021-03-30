@@ -16,9 +16,7 @@
         <form id="form" dataContainer="contactDc">
             <column width="350px">
                 <lookupField id="contactTypeField" property="contactType"/>
-                <textField id="valueField" property="value">
-                    <validator class="com.company.task.web.screens.contact.Validator"/>
-                </textField>
+                <textField id="valueField" property="value" />
             </column>
         </form>
         <hbox id="editActions" spacing="true">

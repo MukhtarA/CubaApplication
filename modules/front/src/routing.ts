@@ -1,3 +1,5 @@
+import { OrderManagement } from "./app/order/OrderManagement";
+import { AccountManagement } from "./app/account/AccountManagement";
 import { getMenuItems } from "@cuba-platform/react-core";
 
 export const menuItems = getMenuItems();
@@ -20,3 +22,17 @@ const userSettingsSubMenu = {
 // Add sub menu item to menu config
 menuItems.push(userSettingsSubMenu);
 */
+
+menuItems.push({
+  pathPattern: "/accountManagement/:entityId?",
+  menuLink: "/accountManagement",
+  component: AccountManagement,
+  caption: "AccountManagement"
+});
+
+menuItems.push({
+  pathPattern: "/orderManagement/:entityId?",
+  menuLink: "/orderManagement",
+  component: OrderManagement,
+  caption: "OrderManagement"
+});
