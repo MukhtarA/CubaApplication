@@ -26,7 +26,7 @@ class OrderListComponent extends React.Component<
   MainStoreInjected & WrappedComponentProps
 > {
   dataCollection = collection<Order>(Order.NAME, {
-    view: "_local",
+    view: "order-view",
     sort: "-updateTs"
   });
   @observable selectedRowKey: string | undefined;
@@ -60,7 +60,7 @@ class OrderListComponent extends React.Component<
       >
         <Button
           htmlType="button"
-          style={{ margin: "0 12px 12px 0" }}
+          style={{ margin: "0 12px 12px 0"}}
           type="primary"
           icon="plus"
         >
@@ -122,7 +122,6 @@ class OrderListComponent extends React.Component<
     this.showDeletionDialog(this.getRecordById(this.selectedRowKey!));
   };
 }
-
 const OrderList = injectIntl(OrderListComponent);
 
 export default OrderList;

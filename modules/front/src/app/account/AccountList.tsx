@@ -2,15 +2,14 @@ import * as React from "react";
 import { observer } from "mobx-react";
 import { Link } from "react-router-dom";
 import { observable } from "mobx";
-import { Modal, Button } from "antd";
+import {Modal, Button, Table} from "antd";
 
 import {
   collection,
   injectMainStore,
-  MainStoreInjected
+  MainStoreInjected,
 } from "@cuba-platform/react-core";
 import { DataTable, Spinner } from "@cuba-platform/react-ui";
-
 import { Account } from "../../cuba/entities/task_Account";
 import { SerializedEntity } from "@cuba-platform/rest";
 import { AccountManagement } from "./AccountManagement";
@@ -25,13 +24,69 @@ import {
 class AccountListComponent extends React.Component<
   MainStoreInjected & WrappedComponentProps
 > {
-  dataCollection = collection<Account>(Account.NAME, {
-    view: "_local",
-    sort: "-updateTs"
-  });
+
   @observable selectedRowKey: string | undefined;
 
-  fields = ["name", "lastName", "middleName", "photo"];
+  dataCollection = collection<Account>(Account.NAME, {
+    view: "account-view",
+    sort: "-updateTs"
+  });
+  private photo: any;
+
+
+  fields = [
+    "photo",
+    "name",
+    "lastName",
+    "middleName",
+    "contacts"
+  ];
+
+  columns = [
+    {
+      title: 'Avatar',
+      dataIndex: 'photo',
+      render: (text: any, record: { photo: any;  }): any => {
+        return (
+          <div>
+            <img src={record.photo}/>
+          </div>
+        );
+      },
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      render: (text: any, record: {
+        middleName: any;
+        lastName: any;
+        name: any;
+        photo: string | undefined;  }): any => {
+        return (
+          <div>
+            <p>
+              {record.name}
+              {' '}
+              {record.lastName}
+              {' '}
+              {record.middleName}
+            </p>
+          </div>
+        );
+      },
+    },
+    {
+      title: 'Contacts',
+      dataIndex: 'contacts',
+      render: (text: any, record: {
+        contacts: any;
+        photo: string | undefined;  }): any => {
+        return(
+          <p>{record.contacts.value}</p>
+          )
+      }
+    },
+  ]
 
   showDeletionDialog = (e: SerializedEntity<Account>) => {
     Modal.confirm({
@@ -52,7 +107,7 @@ class AccountListComponent extends React.Component<
 
   render() {
     if (this.props.mainStore?.isEntityDataLoaded() !== true) return <Spinner />;
-
+    console.log(this.dataCollection.items);
     const buttons = [
       <Link
         to={AccountManagement.PATH + "/" + AccountManagement.NEW_SUBPATH}
@@ -91,6 +146,7 @@ class AccountListComponent extends React.Component<
       </Button>
     ];
 
+    class AccountTable extends Table<Account>{}
     return (
       <DataTable
         dataCollection={this.dataCollection}
@@ -98,6 +154,10 @@ class AccountListComponent extends React.Component<
         onRowSelectionChange={this.handleRowSelectionChange}
         hideSelectionColumn={true}
         buttons={buttons}
+        tableProps={{
+          columns: this.columns,
+          style: {textAlign: "center", alignContent: "center", alignItems: "center"},
+        }}
       />
     );
   }

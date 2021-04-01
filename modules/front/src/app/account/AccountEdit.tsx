@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FormEvent } from "react";
-import { Alert, Button, Card, Form, message } from "antd";
+import {Alert, Button, Card, Form, message, Table} from "antd";
 import { observer } from "mobx-react";
 import { AccountManagement } from "./AccountManagement";
 import { FormComponentProps } from "antd/lib/form";
@@ -25,12 +25,15 @@ import {
   constructFieldsWithErrors,
   clearFieldErrors,
   MultilineText,
-  Spinner
+  Spinner,
+  Msg
 } from "@cuba-platform/react-ui";
 
 import "../../app/App.css";
 
 import { Account } from "../../cuba/entities/task_Account";
+import Column from "antd/es/table/Column";
+import {Contact} from "../../cuba/entities/task_Contact";
 
 type Props = FormComponentProps & EditorProps & MainStoreInjected;
 
@@ -52,7 +55,7 @@ class AccountEditComponent extends React.Component<
   @observable formRef: React.RefObject<Form> = React.createRef();
   reactionDisposers: IReactionDisposer[] = [];
 
-  fields = ["name", "lastName", "middleName"];
+  fields = ["photo","name", "lastName", "middleName", "contacts"];
 
   @observable globalErrors: string[] = [];
 
@@ -124,8 +127,7 @@ class AccountEditComponent extends React.Component<
     if (this.updated) {
       return <Redirect to={AccountManagement.PATH} />;
     }
-
-    const { status, lastError, load } = this.dataInstance;
+    const { status, lastError, load, item } = this.dataInstance;
     const { mainStore, entityId } = this.props;
     if (mainStore == null || !mainStore.isEntityDataLoaded()) {
       return <Spinner />;
@@ -175,6 +177,32 @@ class AccountEditComponent extends React.Component<
             formItemOpts={{ style: { marginBottom: "12px" } }}
             getFieldDecoratorOpts={{}}
           />
+
+          <Form.Item label={<Msg entityName={Account.NAME} propertyName='contacts' />}
+                     key='contacts'
+          >
+            <Table dataSource={item && item.contacts ? item!.contacts : []}
+                   pagination={false}
+                   size='middle'
+                   bordered
+            >
+              <Column title={<Msg entityName={Contact.NAME} propertyName='contactType'/>}
+                      dataIndex='contactType'
+                      key='contactType'
+                      sorter={(a: Contact, b: Contact) =>
+                        a.contactType!.localeCompare(b.contactType!)
+                      }
+              />
+              <Column title={<Msg entityName={Contact.NAME} propertyName='value'/>}
+                      dataIndex='value'
+                      key='value'
+                      sorter={(a: Contact, b: Contact) =>
+                        a.value!.localeCompare(b.value!)
+                      }
+              />
+            </Table>
+          </Form.Item>
+
 
           {this.globalErrors.length > 0 && (
             <Alert

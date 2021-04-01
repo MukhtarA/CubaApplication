@@ -1,3 +1,5 @@
+import { ProductManagement } from "./app/product/ProductManagement";
+import { ContactManagement } from "./app/contact/ContactManagement";
 import { OrderManagement } from "./app/order/OrderManagement";
 import { AccountManagement } from "./app/account/AccountManagement";
 import { getMenuItems } from "@cuba-platform/react-core";
@@ -35,4 +37,18 @@ menuItems.push({
   menuLink: "/orderManagement",
   component: OrderManagement,
   caption: "OrderManagement"
+});
+
+menuItems.push({
+  pathPattern: "/contactManagement/:entityId?",
+  menuLink: "/contactManagement",
+  component: ContactManagement,
+  caption: "ContactManagement"
+});
+
+menuItems.push({
+  pathPattern: "/productManagement/:entityId?",
+  menuLink: "/productManagement",
+  component: ProductManagement,
+  caption: "ProductManagement"
 });

@@ -1,11 +1,11 @@
 import * as React from "react";
-import {FormEvent} from "react";
-import {Alert, Button, Card, Form, message, Table} from "antd";
-import {observer} from "mobx-react";
-import {OrderManagement} from "./OrderManagement";
-import {FormComponentProps} from "antd/lib/form";
-import {Link, Redirect} from "react-router-dom";
-import {IReactionDisposer, observable, reaction, toJS} from "mobx";
+import { FormEvent } from "react";
+import { Alert, Button, Card, Form, message } from "antd";
+import { observer } from "mobx-react";
+import { ProductManagement } from "./ProductManagement";
+import { FormComponentProps } from "antd/lib/form";
+import { Link, Redirect } from "react-router-dom";
+import { IReactionDisposer, observable, reaction, toJS } from "mobx";
 import {
   FormattedMessage,
   injectIntl,
@@ -13,9 +13,11 @@ import {
 } from "react-intl";
 
 import {
+  loadAssociationOptions,
+  DataCollectionStore,
   instance,
   MainStoreInjected,
-  injectMainStore, collection,
+  injectMainStore, collection
 } from "@cuba-platform/react-core";
 
 import {
@@ -27,15 +29,13 @@ import {
   MultilineText,
   Spinner,
   Msg,
-  FormField,
+  FormField
 } from "@cuba-platform/react-ui";
 
 import "../../app/App.css";
 
-import {Order} from "../../cuba/entities/task_Order";
-import {Account} from "../../cuba/entities/task_Account";
-import Column from "antd/es/table/Column";
-import {Product} from "../../cuba/entities/task_Product";
+import { Product } from "../../cuba/entities/task_Product";
+import { Order } from "../../cuba/entities/task_Order";
 
 type Props = FormComponentProps & EditorProps & MainStoreInjected;
 
@@ -45,20 +45,31 @@ type EditorProps = {
 
 @injectMainStore
 @observer
-class OrderEditComponent extends React.Component<Props & WrappedComponentProps> {
-  dataInstance = instance<Order>(Order.NAME, {
-    view: "order-view",
+class ProductEditComponent extends React.Component<
+  Props & WrappedComponentProps
+> {
+  dataInstance = instance<Product>(Product.NAME, {
+    view: "products-order",
     loadImmediately: false
   });
-  accountDc = collection<Account>(Account.NAME, {view: '_minimal', sort: 'name'});
-
+  ordersDc = collection<Order>(Order.NAME, {view: '_minimal', sort: 'account'});
   @observable updated = false;
   @observable formRef: React.RefObject<Form> = React.createRef();
   reactionDisposers: IReactionDisposer[] = [];
 
-  fields = ["date", "amount", "account"];
+  fields = ["name", "price", "quantity", "order"];
 
   @observable globalErrors: string[] = [];
+
+  /**
+   * This method should be called after the user permissions has been loaded
+   */
+  loadAssociationOptions = () => {
+    // MainStore should exist at this point
+    if (this.props.mainStore != null) {
+      const { getAttributePermission } = this.props.mainStore.security;
+    }
+  };
 
   handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -78,7 +89,7 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
         )
         .then(() => {
           message.success(
-            this.props.intl.formatMessage({id: "management.editor.success"})
+            this.props.intl.formatMessage({ id: "management.editor.success" })
           );
           this.updated = true;
         })
@@ -113,7 +124,7 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
             });
           } else {
             message.error(
-              this.props.intl.formatMessage({id: "management.editor.error"})
+              this.props.intl.formatMessage({ id: "management.editor.error" })
             );
           }
         });
@@ -121,31 +132,31 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
   };
 
   isNewEntity = () => {
-    return this.props.entityId === OrderManagement.NEW_SUBPATH;
+    return this.props.entityId === ProductManagement.NEW_SUBPATH;
   };
 
   render() {
-
     if (this.updated) {
-      return <Redirect to={OrderManagement.PATH}/>;
+      return <Redirect to={ProductManagement.PATH} />;
     }
 
     const {getFieldDecorator} = this.props.form;
-    const {status, lastError, load, item} = this.dataInstance;
-    const {mainStore, entityId} = this.props;
+
+    const { status, lastError, load } = this.dataInstance;
+    const { mainStore, entityId } = this.props;
     if (mainStore == null || !mainStore.isEntityDataLoaded()) {
-      return <Spinner/>;
+      return <Spinner />;
     }
 
     // do not stop on "COMMIT_ERROR" - it could be bean validation, so we should show fields with errors
     if (status === "ERROR" && lastError === "LOAD_ERROR") {
       return (
         <>
-          <FormattedMessage id="common.requestFailed"/>.
-          <br/>
-          <br/>
+          <FormattedMessage id="common.requestFailed" />.
+          <br />
+          <br />
           <Button htmlType="button" onClick={() => load(entityId)}>
-            <FormattedMessage id="common.retry"/>
+            <FormattedMessage id="common.retry" />
           </Button>
         </>
       );
@@ -155,75 +166,57 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
       <Card className="narrow-layout">
         <Form onSubmit={this.handleSubmit} layout="vertical" ref={this.formRef}>
           <Field
-            entityName={Order.NAME}
-            propertyName="date"
+            entityName={Product.NAME}
+            propertyName="name"
             form={this.props.form}
-            formItemOpts={{style: {marginBottom: "12px"}}}
+            formItemOpts={{ style: { marginBottom: "12px" } }}
+            getFieldDecoratorOpts={{
+              rules: [{ required: true }]
+            }}
+          />
+
+          <Field
+            entityName={Product.NAME}
+            propertyName="price"
+            form={this.props.form}
+            formItemOpts={{ style: { marginBottom: "12px" } }}
             getFieldDecoratorOpts={{}}
           />
 
           <Field
-            entityName={Order.NAME}
-            propertyName="amount"
+            entityName={Product.NAME}
+            propertyName="quantity"
             form={this.props.form}
-            formItemOpts={{style: {marginBottom: "12px"}}}
-            getFieldDecoratorOpts={{}}
+            formItemOpts={{ style: { marginBottom: "12px" } }}
+            getFieldDecoratorOpts={{
+              rules: [{ required: true }]
+            }}
           />
 
-          <Form.Item label={<Msg entityName={Order.NAME} propertyName='account'/>}
-                     key='account'
-          >
-            {
-              getFieldDecorator('account')(
-                <FormField entityName={Order.NAME}
-                           propertyName='account'
-                           optionsContainer={this.accountDc}
-                />
-              )
-            }
-          </Form.Item>
+          <Field
+            entityName={Product.NAME}
+            propertyName="order"
+            form={this.props.form}
+            formItemOpts={{ style: { marginBottom: "12px" } }}
+            optionsContainer={this.ordersDc}
+            getFieldDecoratorOpts={{
+              rules: [{ required: true }]
+            }}
+          />
 
-
-          {/*"name" | "price" | "quantity" */}
-          <Form.Item label={<Msg entityName={Order.NAME} propertyName='product' />}
-                     key='product'
-          >
-
-            <Table dataSource={item && item.product ? item!.product : []}
-                   pagination={false}
-                   size='middle'
-                   bordered
-            >
-              <Column title={<Msg entityName={Product.NAME} propertyName='name' />}
-                      dataIndex='name'
-                      key='name'
-                      sorter={(a: Product, b: Product) =>
-                        a.name!.localeCompare(b.name!)
-                      }
-              />
-              <Column title={<Msg entityName={Product.NAME} propertyName='price' />}
-                      dataIndex='price'
-                      key='price'
-              />
-              <Column title={<Msg entityName={Product.NAME} propertyName='quantity' />}
-                      dataIndex='quantity'
-                      key='quantity'
-              />
-            </Table>
-          </Form.Item>
 
           {this.globalErrors.length > 0 && (
             <Alert
-              message={<MultilineText lines={toJS(this.globalErrors)}/>}
+              message={<MultilineText lines={toJS(this.globalErrors)} />}
               type="error"
-              style={{marginBottom: "24px"}}
+              style={{ marginBottom: "24px" }}
             />
           )}
 
-          <Form.Item style={{textAlign: "center"}}>
-            <Link to={OrderManagement.PATH}>
+          <Form.Item style={{ textAlign: "center" }}>
+            <Link to={ProductManagement.PATH}>
               <Button htmlType="button">
-                <FormattedMessage id="common.cancel"/>
+                <FormattedMessage id="common.cancel" />
               </Button>
             </Link>
             <Button
@@ -231,12 +224,11 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
               htmlType="submit"
               disabled={status !== "DONE"}
               loading={status === "LOADING"}
-              style={{marginLeft: "8px"}}
+              style={{ marginLeft: "8px" }}
             >
-              <FormattedMessage id="common.submit"/>
+              <FormattedMessage id="common.submit" />
             </Button>
           </Form.Item>
-
         </Form>
       </Card>
     );
@@ -244,7 +236,7 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
 
   componentDidMount() {
     if (this.isNewEntity()) {
-      this.dataInstance.setItem(new Order());
+      this.dataInstance.setItem(new Product());
     } else {
       this.dataInstance.load(this.props.entityId);
     }
@@ -253,11 +245,26 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
       reaction(
         () => this.dataInstance.status,
         () => {
-          const {intl} = this.props;
+          const { intl } = this.props;
           if (this.dataInstance.lastError != null) {
-            message.error(intl.formatMessage({id: "common.requestFailed"}));
+            message.error(intl.formatMessage({ id: "common.requestFailed" }));
           }
         }
+      )
+    );
+
+    this.reactionDisposers.push(
+      reaction(
+        () => this.props.mainStore?.security.isDataLoaded,
+        (isDataLoaded, permsReaction) => {
+          if (isDataLoaded === true) {
+            // User permissions has been loaded.
+            // We can now load association options.
+            this.loadAssociationOptions(); // Calls REST API
+            permsReaction.dispose();
+          }
+        },
+        { fireImmediately: true }
       )
     );
 
@@ -276,13 +283,13 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
                     this.dataInstance.getFieldValues(this.fields)
                   );
                 },
-                {fireImmediately: true}
+                { fireImmediately: true }
               )
             );
             formRefReaction.dispose();
           }
         },
-        {fireImmediately: true}
+        { fireImmediately: true }
       )
     );
   }
@@ -304,5 +311,5 @@ export default injectIntl(
         });
       });
     }
-  })(OrderEditComponent)
+  })(ProductEditComponent)
 );

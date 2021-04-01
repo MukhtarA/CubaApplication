@@ -5,6 +5,8 @@
   "management.editor.validationError": "Validation Error. Please check the data you entered.",
   "management.editor.success": "Entity has been updated",
   "management.editor.error": "Error",
+  "router.ProductManagement": "Product Management",
+  "router.ContactManagement": "Contact Management",
   "router.OrderManagement": "Order Management",
   "router.AccountManagement": "Account Management",
   "common.alt.logo": "Logo",
