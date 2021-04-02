@@ -1,3 +1,4 @@
+import { OrderCards } from "./app/order/OrderCards";
 import { AccountManagement } from "./app/account/AccountManagement";
 import { ProductManagement } from "./app/product/ProductManagement";
 import { ContactManagement } from "./app/contact/ContactManagement";
@@ -53,3 +54,9 @@ menuItems.push({
   caption: "ProductManagement"
 });
 
+menuItems.push({
+  pathPattern: "/orderCards",
+  menuLink: "/orderCards",
+  component: OrderCards,
+  caption: "OrderCards"
+});

@@ -182,11 +182,11 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
               )
             }
           </Form.Item>
+
           {/*"name" | "price" | "quantity" */}
           <Form.Item label={<Msg entityName={Order.NAME} propertyName='product' />}
                      key='product'
           >
-
             <Table dataSource={item && item.product ? item!.product : []}
                    pagination={false}
                    size='middle'
