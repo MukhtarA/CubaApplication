@@ -33,7 +33,6 @@ public class Account extends StandardEntity {
 
     @JoinColumn(name = "PHOTO_ID")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @NotNull
     private FileDescriptor photo;
 
     @OnDelete(DeletePolicy.CASCADE)

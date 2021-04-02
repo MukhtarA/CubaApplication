@@ -13,6 +13,8 @@ import {
 } from "react-intl";
 
 import {
+  loadAssociationOptions,
+  DataCollectionStore,
   instance,
   MainStoreInjected,
   injectMainStore
@@ -26,13 +28,16 @@ import {
   clearFieldErrors,
   MultilineText,
   Spinner,
-  Msg
+  Msg,
+  FormField,
 } from "@cuba-platform/react-ui";
 
 import "../../app/App.css";
 
 import { Account } from "../../cuba/entities/task_Account";
+import { FileDescriptor } from "../../cuba/entities/base/sys$FileDescriptor";
 import Column from "antd/es/table/Column";
+import {Product} from "../../cuba/entities/task_Product";
 import {Contact} from "../../cuba/entities/task_Contact";
 
 type Props = FormComponentProps & EditorProps & MainStoreInjected;
@@ -47,17 +52,37 @@ class AccountEditComponent extends React.Component<
   Props & WrappedComponentProps
 > {
   dataInstance = instance<Account>(Account.NAME, {
-    view: "account-contacts",
+    view: "account-view",
     loadImmediately: false
   });
+
+  @observable photosDc: DataCollectionStore<FileDescriptor> | undefined;
 
   @observable updated = false;
   @observable formRef: React.RefObject<Form> = React.createRef();
   reactionDisposers: IReactionDisposer[] = [];
 
-  fields = ["photo","name", "lastName", "middleName", "contacts"];
+  fields = ["name", "lastName", "middleName", "photo", "contacts"];
 
   @observable globalErrors: string[] = [];
+
+  /**
+   * This method should be called after the user permissions has been loaded
+   */
+  loadAssociationOptions = () => {
+    // MainStore should exist at this point
+    if (this.props.mainStore != null) {
+      const { getAttributePermission } = this.props.mainStore.security;
+
+      this.photosDc = loadAssociationOptions(
+        Account.NAME,
+        "photo",
+        FileDescriptor.NAME,
+        getAttributePermission,
+        { view: "_minimal" }
+      );
+    }
+  };
 
   handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -127,7 +152,8 @@ class AccountEditComponent extends React.Component<
     if (this.updated) {
       return <Redirect to={AccountManagement.PATH} />;
     }
-    const { status, lastError, load, item } = this.dataInstance;
+
+    const { status, lastError, load, item} = this.dataInstance;
     const { mainStore, entityId } = this.props;
     if (mainStore == null || !mainStore.isEntityDataLoaded()) {
       return <Spinner />;
@@ -178,27 +204,33 @@ class AccountEditComponent extends React.Component<
             getFieldDecoratorOpts={{}}
           />
 
+          <Field
+            entityName={Account.NAME}
+            propertyName="photo"
+            form={this.props.form}
+            formItemOpts={{ style: { marginBottom: "12px" } }}
+            optionsContainer={this.photosDc}
+            getFieldDecoratorOpts={{
+              rules: [{ required: true }]
+            }}
+          />
+
           <Form.Item label={<Msg entityName={Account.NAME} propertyName='contacts' />}
                      key='contacts'
           >
             <Table dataSource={item && item.contacts ? item!.contacts : []}
-                   pagination={false}
-                   size='middle'
                    bordered
+                   size='middle'
+                   pagination={false}
             >
-              <Column title={<Msg entityName={Contact.NAME} propertyName='contactType'/>}
+              <Column title={<Msg entityName={Contact.NAME} propertyName='contactType' />}
                       dataIndex='contactType'
                       key='contactType'
-                      sorter={(a: Contact, b: Contact) =>
-                        a.contactType!.localeCompare(b.contactType!)
-                      }
               />
-              <Column title={<Msg entityName={Contact.NAME} propertyName='value'/>}
+
+              <Column title={<Msg entityName={Contact.NAME} propertyName='value' />}
                       dataIndex='value'
                       key='value'
-                      sorter={(a: Contact, b: Contact) =>
-                        a.value!.localeCompare(b.value!)
-                      }
               />
             </Table>
           </Form.Item>
@@ -249,6 +281,21 @@ class AccountEditComponent extends React.Component<
             message.error(intl.formatMessage({ id: "common.requestFailed" }));
           }
         }
+      )
+    );
+
+    this.reactionDisposers.push(
+      reaction(
+        () => this.props.mainStore?.security.isDataLoaded,
+        (isDataLoaded, permsReaction) => {
+          if (isDataLoaded === true) {
+            // User permissions has been loaded.
+            // We can now load association options.
+            this.loadAssociationOptions(); // Calls REST API
+            permsReaction.dispose();
+          }
+        },
+        { fireImmediately: true }
       )
     );
 

@@ -1,7 +1,7 @@
+import { AccountManagement } from "./app/account/AccountManagement";
 import { ProductManagement } from "./app/product/ProductManagement";
 import { ContactManagement } from "./app/contact/ContactManagement";
 import { OrderManagement } from "./app/order/OrderManagement";
-import { AccountManagement } from "./app/account/AccountManagement";
 import { getMenuItems } from "@cuba-platform/react-core";
 
 export const menuItems = getMenuItems();
@@ -52,3 +52,4 @@ menuItems.push({
   component: ProductManagement,
   caption: "ProductManagement"
 });
+

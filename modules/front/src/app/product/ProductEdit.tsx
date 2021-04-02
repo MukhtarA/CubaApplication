@@ -52,7 +52,7 @@ class ProductEditComponent extends React.Component<
     view: "products-order",
     loadImmediately: false
   });
-  ordersDc = collection<Order>(Order.NAME, {view: '_minimal', sort: 'account'});
+  ordersDc = collection<Order>(Order.NAME, {view: 'order-view', sort: 'account'});
   @observable updated = false;
   @observable formRef: React.RefObject<Form> = React.createRef();
   reactionDisposers: IReactionDisposer[] = [];
@@ -193,6 +193,17 @@ class ProductEditComponent extends React.Component<
             }}
           />
 
+
+  {/*        <Form.Item label={<Msg entityName={Product.NAME} propertyName='order'/>}
+                     key='order'>
+            {
+              getFieldDecorator('order')(
+                <FormField entityName={Product.NAME}
+                           propertyName='order'
+                           optionsContainer={this.ordersDc}/>
+              )
+            }
+          </Form.Item>*/}
           <Field
             entityName={Product.NAME}
             propertyName="order"

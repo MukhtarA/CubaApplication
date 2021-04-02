@@ -182,8 +182,6 @@ class OrderEditComponent extends React.Component<Props & WrappedComponentProps> 
               )
             }
           </Form.Item>
-
-
           {/*"name" | "price" | "quantity" */}
           <Form.Item label={<Msg entityName={Order.NAME} propertyName='product' />}
                      key='product'
