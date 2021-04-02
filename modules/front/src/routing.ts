@@ -7,10 +7,10 @@ import { getMenuItems } from "@cuba-platform/react-core";
 
 export const menuItems = getMenuItems();
 
-// Code below demonstrates how we can create SubMenu section
-// Remove '/*' '*/' comments and restart app to get this block in menu
+/*// Code below demonstrates how we can create SubMenu section
+// Remove '/!*' '*!/' comments and restart app to get this block in menu
 
-/*
+
 // This is RouteItem object that we want to see in User Settings sub menu
 const backToHomeRouteItem = {
   pathPattern: "/backToHome",
@@ -21,42 +21,55 @@ const backToHomeRouteItem = {
 // SubMenu object
 const userSettingsSubMenu = {
   caption: 'UserSettings', // add router.UserSettings key to src/i18n/en.json for valid caption
-  items: [backToHomeRouteItem]};
+  items: [backToHomeRouteItem, ]};
 // Add sub menu item to menu config
-menuItems.push(userSettingsSubMenu);
-*/
+menuItems.push(userSettingsSubMenu);*/
 
-menuItems.push({
-  pathPattern: "/accountManagement/:entityId?",
-  menuLink: "/accountManagement",
-  component: AccountManagement,
-  caption: "AccountManagement"
-});
 
-menuItems.push({
-  pathPattern: "/orderManagement/:entityId?",
-  menuLink: "/orderManagement",
-  component: OrderManagement,
-  caption: "OrderManagement"
-});
+const Screens = {
+  caption: 'Screens',
+  items: [
+    {
+      pathPattern: "/accountManagement/:entityId?",
+      menuLink: "/accountManagement",
+      component: AccountManagement,
+      caption: "Account"
+    },
+    {
+      pathPattern: "/orderManagement/:entityId?",
+      menuLink: "/orderManagement",
+      component: OrderManagement,
+      caption: "OrderManagement"
+    },
+    {
+      pathPattern: "/orderCards",
+      menuLink: "/orderCards",
+      component: OrderCards,
+      caption: "OrderCards"
+    },
+  ]
+}
 
-menuItems.push({
-  pathPattern: "/contactManagement/:entityId?",
-  menuLink: "/contactManagement",
-  component: ContactManagement,
-  caption: "ContactManagement"
-});
+menuItems.push(Screens);
 
-menuItems.push({
-  pathPattern: "/productManagement/:entityId?",
-  menuLink: "/productManagement",
-  component: ProductManagement,
-  caption: "ProductManagement"
-});
+const Cards = {
+  caption: 'Cards',
+  items: [
+    {
+      pathPattern: "/contactManagement/:entityId?",
+      menuLink: "/contactManagement",
+      component: ContactManagement,
+      caption: "Contact"
+    },
+    {
+      pathPattern: "/productManagement/:entityId?",
+      menuLink: "/productManagement",
+      component: ProductManagement,
+      caption: "Product"
+    }
+  ]
+}
 
-menuItems.push({
-  pathPattern: "/orderCards",
-  menuLink: "/orderCards",
-  component: OrderCards,
-  caption: "OrderCards"
-});
+
+menuItems.push(Cards);
+
